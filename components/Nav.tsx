@@ -19,7 +19,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface NavProps {
-    user_id: string,
+    userId: string,
+    userRole: string
 }
 export const Nav = (props: NavProps)=> {
   const classes = useStyles();
@@ -87,9 +88,11 @@ Nav.getInitialProps = async (ctx: NextPageContext) =>{
   if(str_cookie){
     const mycookie = cookie.parse(str_cookie);
 
-    const decode = verify(mycookie.auth, GUID).valueOf()
-    Object.assign(ret_obj, decode)
+    const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string}
+    console.log(decode)
+    const {id, role} = decode
+    return {userId: id, userRole: role}
     
   }
-  return ret_obj
+  
 }

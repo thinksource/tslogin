@@ -10,7 +10,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
    console.log(decode)
    if('id' in decode){
     const db = await getDatabaseConnection()
+    console.log("============")
     const repos = db.getRepository(Person);
+    console.log(repos)
     const result = await repos.findOne({where: {user: decode['id']}})
     if (result){
          res.json(result)
