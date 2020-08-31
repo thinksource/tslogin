@@ -17,11 +17,11 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({
 
 handler.post(async (req, res)=>{
     let message:string;
-    const db =  (await getDatabaseConnection()).getRepository(User);
+    const db = await getDatabaseConnection()
+    
+    const dbrep = db.getRepository<User>('user');
     const {email, password} = req.body
-    console.log(req.body)
-    console.log(email, password)
-    const result= await db.findOne({where : {email}})
+    const result= await dbrep.findOne({where : {email}})
     console.log("=,------")
     console.log(result)
     if (result){
@@ -38,7 +38,7 @@ handler.post(async (req, res)=>{
             res.setHeader('Set-Cookie', auth_cookie)
             res.status(200).json({jwt})
         }else{
-            message = "can not authority"
+            message = "can not Login"
             res.status(401).json({message})
         }
     }else{

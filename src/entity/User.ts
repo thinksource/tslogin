@@ -11,7 +11,7 @@ export enum UserRole {
 export const pwhash = (contents: string, salt: string) => crypto.pbkdf2Sync(contents, salt, 1000, 64,'sha512').toString('hex');
 
 
-@Entity()
+@Entity({name: 'user'})
 export class User {
 
     @PrimaryGeneratedColumn('uuid')

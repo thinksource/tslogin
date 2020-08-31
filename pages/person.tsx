@@ -119,14 +119,13 @@ const PersonForm = async (p : OrganzationProps[])=>{
 
 }
 
-PersonForm.getInitialProps = async (ctx: NextPageContext) =>{
-    const cookie = ctx.req?.headers.cookie;
-    const res = await fetch('/api/person', {        
-                headers: {cookie: cookie!}})
-    const json = res.json()
-    return json
-
-}
+// PersonForm.getInitialProps = async (ctx: NextPageContext) =>{
+//     const cookie = ctx.req?.headers.cookie;
+//     const res = await fetch('/api/person', {        
+//                 headers: {cookie: cookie!}})
+//     const json = res.json()
+//     return json
+// }
 
 
 export const getServerSideProps: GetServerSideProps<OrganzationProps[]> = async (_ctx) => {

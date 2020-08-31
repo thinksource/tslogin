@@ -63,7 +63,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
   const str_cookie = appContext.ctx.req?.headers.cookie
   if(str_cookie){
     const mycookie = cookie.parse(str_cookie);
-
+    
     const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string}
     console.log(decode)
     const {id, role} = decode
