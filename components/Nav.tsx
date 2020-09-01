@@ -20,8 +20,56 @@ const useStyles = makeStyles(theme => ({
 
 interface NavProps {
     userId: string,
-    userRole: string
+    userRole: string,
+    email: string
 }
+
+
+const ProfileButton =(props: NavProps)=>{
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  if(props.userId){
+    return (
+      <>
+      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+      {props.email}
+      </Button>
+      <Menu
+      id="simple-menu"
+      anchorEl={anchorEl}
+      keepMounted
+      open={Boolean(anchorEl)}
+      onClose={handleClose}>
+      <MenuItem onClick={handleClose}>
+        <Link href="/person">
+          <a>Profile</a>
+        </Link>
+        </MenuItem>
+      <MenuItem onClick={handleClose}>My account</MenuItem>
+      <MenuItem onClick={handleClose}>Logout</MenuItem>
+      </Menu>
+      </>
+    )
+  }else{
+    return (
+      <Button>
+        <Link href="/login">
+          <a style={{ color: 'white' }}>
+            Login
+          </a>
+        </Link>
+      </Button>
+    )
+  }
+}
+
+
 export const Nav = (props: NavProps)=> {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -34,11 +82,12 @@ export const Nav = (props: NavProps)=> {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  console.log(props)
+  console.log(classes)
   return (
     <AppBar position="static">
       <Toolbar variant="dense">
-        <Typography variant="h6" className={classes.title}>
+        <Typography className={classes.title}>
           My Form
         </Typography>
 
@@ -64,23 +113,18 @@ export const Nav = (props: NavProps)=> {
         onClose={handleClose}>
         <MenuItem onClick={handleClose}>
           <Link href="/person">
-            <a>Profile</a>
+            <a>Personal Profile</a>
           </Link>
           </MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
+        <MenuItem onClick={handleClose}>          
+          <Link href = {`/user/${props.userId}`}>
+            <a>My account</a>
+          </Link></MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
 
 
-      <Button color="inherit"  style={{ flex: 1 }}>
-          <Link href={"/person/"+props.userId}>
-            <a style={{ color: 'white' }}>
-              <Typography  color="inherit">
-                edit myself
-              </Typography>
-            </a>
-          </Link>
-        </Button>
+      <ProfileButton userId={props.userId} userRole={props.userRole} email={props.email}></ProfileButton>
       </Toolbar>
     </AppBar>
   );
@@ -92,10 +136,10 @@ Nav.getInitialProps = async (ctx: NextPageContext) =>{
   if(str_cookie){
     const mycookie = cookie.parse(str_cookie);
 
-    const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string}
+    const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string, email:string}
     console.log(decode)
-    const {id, role} = decode
-    return {userId: id, userRole: role}
+    const {id, role, email} = decode
+    return {userId: id, userRole: role, email:email}
     
   }
   

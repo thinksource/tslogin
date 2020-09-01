@@ -7,12 +7,13 @@ import Head from 'next/head';
 import React from 'react';
 import { SWRConfig } from 'swr';
 import { Nav } from '../components/Nav';
-import { myRequest } from '../libs/auth';
+import { myRequest, decodeAuthCookie } from '../libs/auth';
 
 
 import { verify} from 'jsonwebtoken';
 import cookie from 'cookie';
 import { GUID } from '../libs/auth';
+import { UserRole } from '../src/entity/User';
 // Create a theme instance.
 export const theme = createMuiTheme({
   palette: {
@@ -30,7 +31,7 @@ export const theme = createMuiTheme({
 
 function MyApp(appProps: AppProps) {
   const {Component, pageProps} = appProps
-  const {UserId, UserRole} = appProps as unknown as {UserId:string, UserRole:string}
+  const {UserId, UserRole, email} = appProps as unknown as {UserId: string, UserRole: string, email: string}
   return (
     <React.Fragment>
       <Head>
@@ -43,7 +44,7 @@ function MyApp(appProps: AppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Nav userId={UserId} userRole={UserRole}/>
+        <Nav userId={UserId} userRole={UserRole} email={email}/>
         <SWRConfig
           value={{ fetcher: (method: Method, data: any) => (url:string) => fetch(url, {method, body: data}) }}
         >
@@ -62,12 +63,7 @@ MyApp.getInitialProps = async (appContext: AppContext) => {
   const appProps = await App.getInitialProps(appContext);
   const str_cookie = appContext.ctx.req?.headers.cookie
   if(str_cookie){
-    const mycookie = cookie.parse(str_cookie);
-    
-    const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string}
-    console.log(decode)
-    const {id, role} = decode
-    return {UserId: id, userRole: role, ...appProps}
+    return decodeAuthCookie(str_cookie)
   }
   return { ...appProps }
 }

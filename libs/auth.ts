@@ -1,9 +1,39 @@
 import { NextApiResponse, NextApiHandler, NextApiRequest, NextPageContext } from "next";
-import { verify} from 'jsonwebtoken';
+import { verify, sign} from 'jsonwebtoken';
 import Axios, { Method } from "axios";
 import { UserRole } from "../src/entity/User";
-
+import cookie from 'cookie';
 export const GUID ='274a5db6-334f-41b8-a87c-2609bc69e94e'
+
+const TOKEN_NAME = 'auth'
+export function setAuthCookie(res: NextApiResponse, token: Object){
+    const jwt = sign(token, GUID, {expiresIn: '2h'})
+    const auth_cookie = cookie.serialize(TOKEN_NAME, jwt, {
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: 3600,
+        path: '/'
+    })
+    res.setHeader('Set-Cookie', auth_cookie)
+    return jwt
+}
+
+export function removeAuthCookie(res: NextApiResponse) {
+    const auth_cookie = cookie.serialize(TOKEN_NAME, '', {
+      maxAge: -1,
+      path: '/',
+    })
+  
+    res.setHeader('Set-Cookie', auth_cookie)
+  }
+
+
+export const decodeAuthCookie = (cookiestr: string)=>{
+    const mycookie = cookie.parse(cookiestr)
+    const decode = verify(mycookie.auth, GUID) as {id: string, role: UserRole, email: string}
+    const {id, role, email} = decode
+    return {UserId: id, UserRole: role, 'email': email}
+}
 
 export const roleverify=(cookieStr: string, roles: UserRole[])=>{
     try{
@@ -18,7 +48,6 @@ export const roleverify=(cookieStr: string, roles: UserRole[])=>{
         return false;
     }
 }
-
 
 
 export const authenticated = (fn: NextApiHandler, roles: UserRole[]) => async (

@@ -3,7 +3,7 @@ import {getDatabaseConnection} from '../../../libs/db';
 import {User, UserRole, pwhash} from '../../../src/entity/User';
 import nextConnect from 'next-connect';
 import {sign} from 'jsonwebtoken';
-import {GUID} from '../../../libs/auth'
+import {GUID, setAuthCookie} from '../../../libs/auth'
 import cookie from 'cookie'
 
 
@@ -22,20 +22,11 @@ handler.post(async (req, res)=>{
     const dbrep = db.getRepository<User>('user');
     const {email, password} = req.body
     const result= await dbrep.findOne({where : {email}})
-    console.log("=,------")
-    console.log(result)
     if (result){
         const pw_hash = pwhash(password, result.salt)
         if (pw_hash === result.password && result.role !== UserRole.blocked){
             const claim =  {email: result.email, id: result.id, role: result.role}
-            const jwt = sign(claim, GUID, {expiresIn: '2h'})
-            const auth_cookie = cookie.serialize('auth', jwt, {
-                httpOnly: true,
-                sameSite: 'strict',
-                maxAge: 3600,
-                path: '/'
-            })
-            res.setHeader('Set-Cookie', auth_cookie)
+            const jwt = setAuthCookie(res, claim)
             res.status(200).json({jwt})
         }else{
             message = "can not Login"

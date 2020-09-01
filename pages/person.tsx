@@ -101,7 +101,7 @@ const PersonForm = async (p : OrganzationProps[])=>{
                         id="combo-box-demo"
                         options={p}
                         value ={belongOrg}
-                        onChange ={(event: ChangeEvent<{}>, newValue: OrganzationProps|null, _reason: AutocompleteChangeReason,)=>{
+                        onChange ={(event: ChangeEvent<{}>, newValue: OrganzationProps|null, _reason: AutocompleteChangeReason)=>{
                             const index=_.findIndex(p, (nv)=>nv.id === newValue?.id)
                             setbelongOrg(p[index])
                         }}
