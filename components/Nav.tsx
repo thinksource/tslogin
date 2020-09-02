@@ -76,7 +76,52 @@ const ProfileButton =(props: NavProps)=>{
   }
 }
 
-
+const OrgButton =(props: NavProps)=>{
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  console.log(props)
+  if(props.userRole === 'admin'){
+    return (
+      <>
+      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+      Organization
+      </Button>
+      <Menu
+      id="og-menu"
+      anchorEl={anchorEl}
+      keepMounted
+      open={Boolean(anchorEl)}
+      onClose={handleClose}>
+      <MenuItem onClick={handleClose}>
+        <Link href="/organization/add">
+          <a>add</a>
+        </Link>
+        </MenuItem>
+      <MenuItem onClick={handleClose}>          
+      <Link href = "/organization/list">
+            <a>list organization</a>
+      </Link>
+      </MenuItem>
+      </Menu>
+      </>
+    )
+  }else{
+    return (
+      <Button>
+        <Link href="/login">
+          <a style={{ color: 'white' }}>
+            regist a organization
+          </a>
+        </Link>
+      </Button>
+    )
+  }
+}
 export const Nav = (props: NavProps)=> {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -131,6 +176,7 @@ export const Nav = (props: NavProps)=> {
         </MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
+      <OrgButton></OrgButton>
       <ProfileButton userId={props.userId} userRole={props.userRole} email={props.email}></ProfileButton>
       </Toolbar>
     </AppBar>

@@ -33,7 +33,6 @@ const LoginForm: React.FC<Props> = (loginData: Props)=>{
                 if (myjson.message){
                     setMessage(myjson.message)
                 }else{
-                    
                     const p=loginData.previousPath?loginData.previousPath:'/'
                     router.push(p)            
                 }

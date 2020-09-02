@@ -76,18 +76,18 @@ export const authenticated = (fn: NextApiHandler, roles: UserRole[]) => async (
     res.status(401).json({message})
 }
 
-export const authNextConnect = nextConnect().use((req: NextApiRequest, res: NextApiResponse, next) => {
-    const decode = verify(req.cookies.auth!, GUID)
-    const djson = JSON.parse(JSON.stringify(decode))
-    for (let role of roles){
-        if(role == djson.role){
-          return await next(req, res);  
-        }
-    }
-    const message='Sorry you are not authenticated' 
-    res.status(401).json({message})
-    next()
-  })
+// export const authNextConnect = nextConnect().use((req: NextApiRequest, res: NextApiResponse, next) => {
+//     const decode = verify(req.cookies.auth!, GUID)
+//     const djson = JSON.parse(JSON.stringify(decode))
+//     for (let role of roles){
+//         if(role == djson.role){
+//           return await next(req, res);  
+//         }
+//     }
+//     const message='Sorry you are not authenticated' 
+//     res.status(401).json({message})
+//     next()
+//   })
 
 
 

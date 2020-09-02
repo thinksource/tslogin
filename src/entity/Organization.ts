@@ -18,7 +18,7 @@ export class Organization {
 
     @Column({
         type: "enum",
-        enum: ["active", "deactive"],
+        enum: ["active", "deactive", "deleted"],
         default: 'active'
     })
     status!: string;
