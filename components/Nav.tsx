@@ -5,7 +5,7 @@ import React from 'react';
 import { NextPageContext } from 'next';
 import { verify} from 'jsonwebtoken';
 import cookie from 'cookie';
-import { GUID } from '../libs/auth';
+import { GUID, decodeAuthCookie } from '../libs/auth';
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -19,9 +19,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface NavProps {
-    userId: string,
-    userRole: string,
-    email: string
+    userId?: string,
+    userRole?: string,
+    email?: string
 }
 
 
@@ -33,7 +33,7 @@ const ProfileButton =(props: NavProps)=>{
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  console.log(props)
   if(props.userId){
     return (
       <>
@@ -51,8 +51,15 @@ const ProfileButton =(props: NavProps)=>{
           <a>Profile</a>
         </Link>
         </MenuItem>
-      <MenuItem onClick={handleClose}>My account</MenuItem>
-      <MenuItem onClick={handleClose}>Logout</MenuItem>
+      <MenuItem onClick={handleClose}>          
+      <Link href = {`/user/${props.userId}`}>
+            <a>My account</a>
+      </Link>
+      </MenuItem>
+      <MenuItem onClick={handleClose}>      
+      <Link href ="/user/logout">
+            <a>Logout</a>
+      </Link></MenuItem>
       </Menu>
       </>
     )
@@ -73,6 +80,7 @@ const ProfileButton =(props: NavProps)=>{
 export const Nav = (props: NavProps)=> {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [MyId, setMyId] = React.useState<string | undefined>(props.userId);
 //   const stateChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
 //     console.log(event.target.value);
 // };
@@ -119,11 +127,10 @@ export const Nav = (props: NavProps)=> {
         <MenuItem onClick={handleClose}>          
           <Link href = {`/user/${props.userId}`}>
             <a>My account</a>
-          </Link></MenuItem>
+          </Link>
+        </MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
-
-
       <ProfileButton userId={props.userId} userRole={props.userRole} email={props.email}></ProfileButton>
       </Toolbar>
     </AppBar>
@@ -133,13 +140,15 @@ export const Nav = (props: NavProps)=> {
 Nav.getInitialProps = async (ctx: NextPageContext) =>{
   const str_cookie =ctx.req?.headers.cookie
   const ret_obj={}
+  console.log("Nav init")
   if(str_cookie){
-    const mycookie = cookie.parse(str_cookie);
+    // const mycookie = cookie.parse(str_cookie);
 
-    const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string, email:string}
-    console.log(decode)
-    const {id, role, email} = decode
-    return {userId: id, userRole: role, email:email}
+    // const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string, email:string}
+    // console.log(decode)
+    const decode = decodeAuthCookie(str_cookie)
+    console.log("Nav init", decode)
+    return decode
     
   }
   

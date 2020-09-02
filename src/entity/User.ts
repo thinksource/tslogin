@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, Index, BeforeInsert} from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, Index, BeforeInsert, BeforeUpdate} from "typeorm";
 import crypto from 'crypto';
 import _ from 'lodash';
 // export type UserState = "active" | "deactive"
@@ -43,12 +43,16 @@ export class User {
     // })
     // role: UserRole
 
+    generateSalt(){
+        this.salt = crypto.randomBytes(16).toString('hex');
+    }
+
     @BeforeInsert()
     generatePasswordDigest(){
-        this.salt = crypto.randomBytes(16).toString('hex');
+        this.generateSalt()
         this.password = pwhash(this.password, this.salt);
-
     }
+
 
     toJSON() {
         return _.omit(this, ['password', 'errors', 'salt']);

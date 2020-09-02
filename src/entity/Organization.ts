@@ -5,7 +5,7 @@ import { Person } from "./Person";
 import { Project } from "./Project";
 import { Technology } from "./Technology";
 import _ from 'lodash';
-@Entity()
+@Entity({name: 'organization'})
 export class Organization {
     @PrimaryGeneratedColumn('uuid')
     id!: string;

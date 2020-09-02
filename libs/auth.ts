@@ -4,6 +4,8 @@ import Axios, { Method } from "axios";
 import { UserRole } from "../src/entity/User";
 import cookie from 'cookie';
 export const GUID ='274a5db6-334f-41b8-a87c-2609bc69e94e'
+import nextConnect from "next-connect";
+import { NextApiRequestCookies } from "next/dist/next-server/server/api-utils";
 
 const TOKEN_NAME = 'auth'
 export function setAuthCookie(res: NextApiResponse, token: Object){
@@ -21,6 +23,7 @@ export function setAuthCookie(res: NextApiResponse, token: Object){
 export function removeAuthCookie(res: NextApiResponse) {
     const auth_cookie = cookie.serialize(TOKEN_NAME, '', {
       maxAge: -1,
+      httpOnly: true,
       path: '/',
     })
   
@@ -72,6 +75,21 @@ export const authenticated = (fn: NextApiHandler, roles: UserRole[]) => async (
     const message='Sorry you are not authenticated' 
     res.status(401).json({message})
 }
+
+export const authNextConnect = nextConnect().use((req: NextApiRequest, res: NextApiResponse, next) => {
+    const decode = verify(req.cookies.auth!, GUID)
+    const djson = JSON.parse(JSON.stringify(decode))
+    for (let role of roles){
+        if(role == djson.role){
+          return await next(req, res);  
+        }
+    }
+    const message='Sorry you are not authenticated' 
+    res.status(401).json({message})
+    next()
+  })
+
+
 
 export async function myGet(url: string, ctx: NextPageContext) {
     const cookie = ctx.req?.headers.cookie;

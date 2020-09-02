@@ -11,7 +11,7 @@ import _ from 'lodash';
 //     email: string
 // }
 
-export interface OrganzationProps{
+export interface OrganizationProps{
     id: string,
     name: string,
     website: string,
@@ -19,11 +19,14 @@ export interface OrganzationProps{
 export interface PeopleProps {
     names: string[];
 }
-const PersonForm = async (p : OrganzationProps[])=>{
+interface Props {
+  organzations: Array<OrganizationProps>
+}
+const PersonForm = async (p : Props)=>{
     const [title, setTitle] = useState<any>("");
     const [clinical_exp, setClinicalExp] = useState<Boolean>(false);
     const [COVID19, setCOVID19] = useState<Boolean>(false);
-    const [belongOrg, setbelongOrg] = useState<OrganzationProps>();
+    const [belongOrg, setbelongOrg] = useState<OrganizationProps>();
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setTitle(event.target.value as string);
       };
@@ -99,13 +102,13 @@ const PersonForm = async (p : OrganzationProps[])=>{
                     <Grid item xs={6}>
                     <Autocomplete
                         id="combo-box-demo"
-                        options={p}
+                        options={p.organzations}
                         value ={belongOrg}
-                        onChange ={(event: ChangeEvent<{}>, newValue: OrganzationProps|null, _reason: AutocompleteChangeReason)=>{
-                            const index=_.findIndex(p, (nv)=>nv.id === newValue?.id)
-                            setbelongOrg(p[index])
+                        onChange ={(event: ChangeEvent<{}>, newValue: OrganizationProps|null, _reason: AutocompleteChangeReason)=>{
+                            const index=_.findIndex(p.organzations, (nv)=>nv.id === newValue?.id)
+                            setbelongOrg(p.organzations[index])
                         }}
-                        getOptionLabel={(option: OrganzationProps) => option.name}
+                        getOptionLabel={(option: OrganizationProps) => option.name}
                         style={{ width: 300 }}
                         renderInput={(params:any) => <TextField {...params} label="find Organization" variant="outlined" />}
                         />
@@ -128,14 +131,19 @@ const PersonForm = async (p : OrganzationProps[])=>{
 // }
 
 
-export const getServerSideProps: GetServerSideProps<OrganzationProps[]> = async (_ctx) => {
-    let resultorg: GetServerSidePropsResult<OrganzationProps[]>  = {props:[]};
+export const getServerSideProps: GetServerSideProps = async (_ctx) => {
+    // let resultorg: GetServerSidePropsResult<OrganzationProps>  = {props:{organzations:OrganzationProps[]}};
+    let resultorg: OrganizationProps[] = []
     const db = await getDatabaseConnection()
-    const result = await db.getRepository(Organization).find({where: {status: "active"}})
+    const result = await db.manager.find(Organization, {status: "active"})
+    // console.log(rm)
+    // console.log(db.entityMetadatas)
+    // const result = await db.getRepository(Organization).find({where: {status: "active"}})
     for (let ri of result){
-        resultorg.props.push(ri.toSimpleJSON())
+        resultorg.push(ri.toSimpleJSON())
     }
-    return resultorg
+    console.log(resultorg)
+    return {'props': {'orgnization' : resultorg}}
   };
 export default PersonForm
 

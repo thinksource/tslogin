@@ -4,7 +4,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import axios, { Method } from 'axios';
 import App, { AppInitialProps, AppProps, AppContext } from 'next/app';
 import Head from 'next/head';
-import React from 'react';
+import React, { useState } from 'react';
 import { SWRConfig } from 'swr';
 import { Nav } from '../components/Nav';
 import { myRequest, decodeAuthCookie } from '../libs/auth';
@@ -30,8 +30,23 @@ export const theme = createMuiTheme({
 });
 
 function MyApp(appProps: AppProps) {
+  
   const {Component, pageProps} = appProps
   const {UserId, UserRole, email} = appProps as unknown as {UserId: string, UserRole: string, email: string}
+  const [MyId, setMyId] = useState<string>(UserId);
+  
+
+  // async function getInitialProps (appContext: AppContext) {
+  //   // calls page's `getInitialProps` and fills `appProps.pageProps`
+  //   const appProps = await App.getInitialProps(appContext);
+  //   const str_cookie = appContext.ctx.req?.headers.cookie
+  //   if(str_cookie){
+  //     const ret = decodeAuthCookie(str_cookie)
+  //     setMyId(ret.UserId)
+  //     return ret
+  //   }
+  //   return { ...appProps }
+  // }
   return (
     <React.Fragment>
       <Head>
@@ -44,7 +59,7 @@ function MyApp(appProps: AppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Nav userId={UserId} userRole={UserRole} email={email}/>
+        <Nav userId={MyId} userRole={UserRole} email={email}/>
         <SWRConfig
           value={{ fetcher: (method: Method, data: any) => (url:string) => fetch(url, {method, body: data}) }}
         >
