@@ -16,7 +16,6 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({
     const {email, password, passwordConfirmation} = req.body;
     let db = (await getDatabaseConnection()).manager;
     const user : User = new User()
-    console.log()
     if (!email || !password || !passwordConfirmation){
         
         res.status(400).json({'message':"fields not completed!"})
@@ -27,9 +26,10 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({
         console.log(password)
         console.log(passwordConfirmation)
         if (await user_validate(user, passwordConfirmation)){
+            console.log("saving now")
             console.log(user)
-            await db.save(user)
-            res.status(200).json(user)
+            const result=await db.save<User>(user)
+            res.status(200).json(result)
         }else{
             res.status(400).json(
                 {

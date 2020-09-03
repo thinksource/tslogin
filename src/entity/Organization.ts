@@ -29,14 +29,17 @@ export class Organization {
     @Column('simple-array')
     mailext!: string[];
 
-    @ManyToOne(() => Person, p => p.belong_organization)
+    @OneToMany(() => Person, p => p.belong_organization)
     people?: Person[];
 
-    @ManyToOne(() => Project, p => p.organization)
+    @OneToMany(() => Project, p => p.organization)
     project?: Project[];
 
-    @ManyToOne(() => Technology, t => t.organization)
+    @OneToMany(() => Technology, t => t.organization)
     technology?: Technology[];
+
+    @ManyToOne(()=>User)
+    createby!: User;
 
     @Column('tinyint')
     member!: boolean;

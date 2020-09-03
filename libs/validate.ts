@@ -18,7 +18,7 @@ export async function user_validate(user: User, pw: string){
     if (found)
         errors.push('user email already exist')
     else
-        console.log("saving now")    
+        console.log("validate ok")    
     }catch(e){
         console.log(e)
     }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography, Button, Link } from '@material-ui/core';
 import { Formik, Form, Field} from 'formik'
 // import { mutate} from 'swr';
 
@@ -42,10 +42,11 @@ const LoginForm: React.FC<Props> = (loginData: Props)=>{
                 <Form>
                     <label htmlFor="message">{message}</label>
                     <label htmlFor="email">email:</label>
-                    <Field name="email"></Field>
+                    <Field name="email"></Field><br/>
                     <label htmlFor="password">password:</label>
-                    <Field name='password' type="password"></Field>
-                    <button type="submit">Submit</button>
+                    <Field name='password' type="password"></Field><br/>
+                    <Button type="submit" variant="contained" color="primary">Login</Button>
+                    <Button variant="contained"><Link href ="/signup"><a>SignUp</a></Link></Button>
                 </Form>
             </Formik>
         </>  

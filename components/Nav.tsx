@@ -57,7 +57,7 @@ const ProfileButton =(props: NavProps)=>{
       </Link>
       </MenuItem>
       <MenuItem onClick={handleClose}>      
-      <Link href ="/user/logout">
+      <Link href ="/api/user/logout">
             <a>Logout</a>
       </Link></MenuItem>
       </Menu>
@@ -103,23 +103,25 @@ const OrgButton =(props: NavProps)=>{
         </Link>
         </MenuItem>
       <MenuItem onClick={handleClose}>          
-      <Link href = "/organization/list">
+      <Link href = "/organization">
             <a>list organization</a>
       </Link>
       </MenuItem>
       </Menu>
       </>
     )
-  }else{
+  }else if(props.userId){
     return (
       <Button>
-        <Link href="/login">
+        <Link href="/organization/register">
           <a style={{ color: 'white' }}>
             regist a organization
           </a>
         </Link>
       </Button>
     )
+  }else{
+    return (<></>)
   }
 }
 export const Nav = (props: NavProps)=> {
@@ -176,7 +178,7 @@ export const Nav = (props: NavProps)=> {
         </MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
-      <OrgButton></OrgButton>
+      <OrgButton userId={props.userId} userRole={props.userRole} email={props.email}></OrgButton>
       <ProfileButton userId={props.userId} userRole={props.userRole} email={props.email}></ProfileButton>
       </Toolbar>
     </AppBar>

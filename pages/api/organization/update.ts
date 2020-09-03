@@ -2,7 +2,7 @@ import nextConnect from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getDatabaseConnection } from "../../../libs/db";
 import { Organization } from "../../../src/entity/Organization";
-import { authenticated, authNextConnect } from "../../../libs/auth";
+import { authenticated } from "../../../libs/auth";
 import { UserRole } from "../../../src/entity/User";
 
 const handler = nextConnect<NextApiRequest, NextApiResponse>({
@@ -11,7 +11,7 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({
     }
   })
 
-handler.use(authNextConnect).post(async (req, res)=>{
+handler.post(async (req, res)=>{
     const {id, name, brief, website, ostatus}= req.body
     const db = (await getDatabaseConnection()).manager
     // const dbrep = db.getRepository<Organization>('organization')
