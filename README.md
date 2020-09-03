@@ -64,5 +64,23 @@ A `type-check` script is also added to `package.json`, which runs TypeScript's `
 
 ## Data base
 
+## before you generate model
+
+make sure in the tsconfig.json
+
+```
+    "module": "commonjs",
+```
+
+The module should be commonjs and then it can work
 ## Schema Generation form model
 
+```
+npm run typeorm -- migration:generate -n filename
+```
+
+## Schema apple to database
+
+```
+npm run typeorm --  migration:run
+```
