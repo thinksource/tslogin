@@ -1,6 +1,8 @@
 import { getDatabaseConnection } from "./db";
-import { User } from "../src/entity/User";
-
+import { User, UserRole } from "../src/entity/User";
+import { parse } from 'cookie';
+import { verify } from 'jsonwebtoken';
+import {GUID} from './auth'
 export async function validate(user: User, pw: string){
     const errors = new Array();
     user.errors=errors
@@ -20,4 +22,15 @@ export async function validate(user: User, pw: string){
         console.log(e)
     }
     return  errors? true: false;
+}
+
+export const decodeAuthCookie = (cookiestr: string)=>{
+    const mycookie = parse(cookiestr)
+    const decode = verify(mycookie.auth, GUID) as {id: string, role: UserRole, email: string}
+    const {id, role, email} = decode
+    const user = new User()
+    user.id=id
+    user.role=role
+    user.email=email
+    return user
 }

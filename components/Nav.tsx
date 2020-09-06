@@ -5,7 +5,8 @@ import React from 'react';
 import { NextPageContext } from 'next';
 import { verify} from 'jsonwebtoken';
 import cookie from 'cookie';
-import { GUID, decodeAuthCookie } from '../libs/auth';
+import { useUser } from './UserProvider';
+// import { GUID, decodeAuthCookie } from '../libs/auth';
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
@@ -124,10 +125,10 @@ const OrgButton =(props: NavProps)=>{
     return (<></>)
   }
 }
-export const Nav = (props: NavProps)=> {
+export const Nav = ()=> {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [MyId, setMyId] = React.useState<string | undefined>(props.userId);
+  const user= useUser()
 //   const stateChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
 //     console.log(event.target.value);
 // };
@@ -137,7 +138,7 @@ export const Nav = (props: NavProps)=> {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  console.log(props)
+  console.log(user.toJSON())
   console.log(classes)
   return (
     <AppBar position="static">
@@ -172,32 +173,32 @@ export const Nav = (props: NavProps)=> {
           </Link>
           </MenuItem>
         <MenuItem onClick={handleClose}>          
-          <Link href = {`/user/${props.userId}`}>
+          <Link href = {`/user/${user.id}`}>
             <a>My account</a>
           </Link>
         </MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
-      <OrgButton userId={props.userId} userRole={props.userRole} email={props.email}></OrgButton>
-      <ProfileButton userId={props.userId} userRole={props.userRole} email={props.email}></ProfileButton>
+      <OrgButton userId={user.id} userRole={user.role} email={user.email}></OrgButton>
+      <ProfileButton userId={user.id} userRole={user.role} email={user.email}></ProfileButton>
       </Toolbar>
     </AppBar>
   );
 }
 
-Nav.getInitialProps = async (ctx: NextPageContext) =>{
-  const str_cookie =ctx.req?.headers.cookie
-  const ret_obj={}
-  console.log("Nav init")
-  if(str_cookie){
-    // const mycookie = cookie.parse(str_cookie);
+// Nav.getInitialProps = async (ctx: NextPageContext) =>{
+//   const str_cookie =ctx.req?.headers.cookie
+//   const ret_obj={}
 
-    // const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string, email:string}
-    // console.log(decode)
-    const decode = decodeAuthCookie(str_cookie)
-    console.log("Nav init", decode)
-    return decode
+//   if(str_cookie){
+//     // const mycookie = cookie.parse(str_cookie);
+
+//     // const decode = verify(mycookie.auth, GUID).valueOf() as {id: string, role: string, email:string}
+//     // console.log(decode)
+//     const decode = decodeAuthCookie(str_cookie)
+//     console.log("Nav init", decode)
+//     return decode
     
-  }
+//   }
   
-}
+// }

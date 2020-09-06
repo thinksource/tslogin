@@ -1,13 +1,10 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {getDatabaseConnection} from '../../../libs/db';
 import {User, UserRole, pwhash} from '../../../src/entity/User';
-import nextConnect from 'next-connect';
-import {sign} from 'jsonwebtoken';
+
 import {GUID, setAuthCookie} from '../../../libs/auth'
-import cookie from 'cookie'
+
 import handler from '../../../libs/handler'
-
-
 
 
 handler.post(async (req, res)=>{

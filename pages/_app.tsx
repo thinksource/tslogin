@@ -7,8 +7,8 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { SWRConfig } from 'swr';
 import { Nav } from '../components/Nav';
-import { myRequest, decodeAuthCookie } from '../libs/auth';
-
+import { myRequest} from '../libs/auth';
+import { useUser, UserProvider} from '../components/UserProvider';
 
 import { verify} from 'jsonwebtoken';
 import cookie from 'cookie';
@@ -32,8 +32,8 @@ export const theme = createMuiTheme({
 function MyApp(appProps: AppProps) {
   
   const {Component, pageProps} = appProps
-  const {UserId, UserRole, email} = appProps as unknown as {UserId: string, UserRole: string, email: string}
-  const [MyId, setMyId] = useState<string>(UserId);
+  // const {UserId, UserRole, email} = appProps as unknown as {UserId: string, UserRole: string, email: string}
+  // const [MyId, setMyId] = useState<string>(UserId);
   
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -62,10 +62,11 @@ function MyApp(appProps: AppProps) {
           content="minimum-scale=1, initial-scale=1, width=device-width"
         />
       </Head>
+      <UserProvider>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Nav userId={MyId} userRole={UserRole} email={email}/>
+        <Nav />
         <SWRConfig
           value={{ fetcher: (method: Method, data: any) => (url:string) => fetch(url, {method, body: data}) }}
         >
@@ -76,16 +77,17 @@ function MyApp(appProps: AppProps) {
           </Container>
         </SWRConfig>
       </ThemeProvider>
+      </UserProvider>
     </React.Fragment>
   )
 }
-MyApp.getInitialProps = async (appContext: AppContext) => {
-  // calls page's `getInitialProps` and fills `appProps.pageProps`
-  const appProps = await App.getInitialProps(appContext);
-  const str_cookie = appContext.ctx.req?.headers.cookie
-  if(str_cookie){
-    return decodeAuthCookie(str_cookie)
-  }
-  return { ...appProps }
-}
+// MyApp.getInitialProps = async (appContext: AppContext) => {
+//   // calls page's `getInitialProps` and fills `appProps.pageProps`
+//   const appProps = await App.getInitialProps(appContext);
+//   const str_cookie = appContext.ctx.req?.headers.cookie
+//   if(str_cookie){
+//     return decodeAuthCookie(str_cookie)
+//   }
+//   return { ...appProps }
+// }
 export default MyApp
