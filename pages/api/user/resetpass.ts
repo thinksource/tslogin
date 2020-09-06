@@ -1,18 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { authenticated, decodeAuthCookie } from '../../../libs/auth'
+import { authenticated, decodeAuthCookie, authById } from '../../../libs/auth'
 import { UserRole, User, pwhash } from '../../../src/entity/User'
 import nextConnect from 'next-connect';
 import { getDatabaseConnection } from '../../../libs/db';
 // import { sampleUserData } from '../utils/sample-data'
+let userId:string="";
 
+import handler from '../../../libs/handler'
 
-const handler = nextConnect<NextApiRequest, NextApiResponse>({
-    onNoMatch(req, res){
-        res.status(405).json({error:`Method ${req.method} Not Allowed`});
-    }
-  })
-
-handler.post(async (req, res)=>{
+handler.use((req, _res)=>{
+    const {id}= req.body
+    userId = id
+}).use(authById(userId)).post(async (req, res)=>{
     console.log(req.body)
     let message:string;
     const db = await getDatabaseConnection()

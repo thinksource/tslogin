@@ -5,15 +5,10 @@ import nextConnect from 'next-connect';
 import {sign} from 'jsonwebtoken';
 import {GUID, setAuthCookie} from '../../../libs/auth'
 import cookie from 'cookie'
+import handler from '../../../libs/handler'
 
 
 
-
-const handler = nextConnect<NextApiRequest, NextApiResponse>({
-    onNoMatch(req, res){
-        res.status(405).json({error:`Method ${req.method} Not Allowed`});
-    }
-  })
 
 handler.post(async (req, res)=>{
     let message:string;

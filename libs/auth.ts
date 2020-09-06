@@ -2,12 +2,16 @@ import { NextApiResponse, NextApiHandler, NextApiRequest, NextPageContext } from
 import { verify, sign} from 'jsonwebtoken';
 import Axios, { Method } from "axios";
 import { UserRole } from "../src/entity/User";
-import cookie from 'cookie';
-export const GUID ='274a5db6-334f-41b8-a87c-2609bc69e94e'
-import nextConnect from "next-connect";
+import cookie, { parse } from 'cookie';
+
+import nextConnect, { NextHandler } from "next-connect";
 import { NextApiRequestCookies } from "next/dist/next-server/server/api-utils";
+import { IncomingMessage } from "http";
 
 const TOKEN_NAME = 'auth'
+export const GUID ='274a5db6-334f-41b8-a87c-2609bc69e94e'
+type middleFunction = (req: IncomingMessage, res:NextApiResponse, next: NextHandler)=>void
+
 export function setAuthCookie(res: NextApiResponse, token: Object){
     const jwt = sign(token, GUID, {expiresIn: '2h'})
     const auth_cookie = cookie.serialize(TOKEN_NAME, jwt, {
@@ -76,18 +80,6 @@ export const authenticated = (fn: NextApiHandler, roles: UserRole[]) => async (
     res.status(401).json({message})
 }
 
-// export const authNextConnect = nextConnect().use((req: NextApiRequest, res: NextApiResponse, next) => {
-//     const decode = verify(req.cookies.auth!, GUID)
-//     const djson = JSON.parse(JSON.stringify(decode))
-//     for (let role of roles){
-//         if(role == djson.role){
-//           return await next(req, res);  
-//         }
-//     }
-//     const message='Sorry you are not authenticated' 
-//     res.status(401).json({message})
-//     next()
-//   })
 
 
 
@@ -168,3 +160,51 @@ export class myRequest{
         return json; 
     }
 }
+
+export function authByRole(roles: UserRole[]):middleFunction{
+    return (req: IncomingMessage, res:NextApiResponse, next: NextHandler)=>{
+      const cookiestr=req.headers?.cookie
+      if(cookiestr){
+        try{
+          const cookieobj = parse(cookiestr)
+          const decode = verify(cookieobj[TOKEN_NAME], GUID)
+          
+          const djson = JSON.parse(JSON.stringify(decode))
+          if(djson && roles.indexOf(djson.role)>=0){
+            next()
+          }else{
+            res.status(401).json({message: 'User do not have right to visit this page'})
+            // next({message: 'User do not have right to visit this page'})
+          }
+        }catch(e){
+          res.status(401).json({message:'Please login again'})
+        }
+      }else{
+        res.redirect('/')
+      }
+    }
+  }
+
+  export function authById(userId: string):middleFunction{
+    return (req: IncomingMessage, res:NextApiResponse, next: NextHandler)=>{
+      const cookiestr=req.headers?.cookie
+      if(cookiestr){
+        try{
+          const cookieobj = parse(cookiestr)
+          const decode = verify(cookieobj[TOKEN_NAME], GUID)
+          
+          const djson = JSON.parse(JSON.stringify(decode))
+          if(djson && djson.id === userId){
+            next()
+          }else{
+            res.status(401).json({message: 'User do not have right to visit this page'})
+            // next({message: 'User do not have right to visit this page'})
+          }
+        }catch(e){
+          res.status(401).json({message:'Please login again'})
+        }
+      }else{
+        res.redirect('/')
+      }
+    }
+  }

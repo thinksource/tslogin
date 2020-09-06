@@ -2,16 +2,11 @@ import nextConnect from "next-connect";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getDatabaseConnection } from "../../../libs/db";
 import { Organization } from "../../../src/entity/Organization";
-import { authenticated } from "../../../libs/auth";
+import { authenticated, authByRole } from "../../../libs/auth";
 import { UserRole } from "../../../src/entity/User";
+import handler from '../../../libs/handler'
 
-const handler = nextConnect<NextApiRequest, NextApiResponse>({
-    onNoMatch(req, res){
-        res.status(405).json({error:`Method ${req.method} Not Allowed`});
-    }
-  })
-
-handler.post(async (req, res)=>{
+handler.use(authByRole([UserRole.admin])).post(async (req, res)=>{
     const {id, name, brief, website, ostatus}= req.body
     const db = (await getDatabaseConnection()).manager
     // const dbrep = db.getRepository<Organization>('organization')

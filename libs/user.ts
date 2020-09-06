@@ -1,10 +1,7 @@
 import { getDatabaseConnection } from "./db";
 import { User } from "../src/entity/User";
 
-
-
-
-export async function user_validate(user: User, pw: string){
+export async function validate(user: User, pw: string){
     const errors = new Array();
     user.errors=errors
     if(user.password !== pw) errors.push('password do not match of two input');

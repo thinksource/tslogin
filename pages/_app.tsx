@@ -35,7 +35,13 @@ function MyApp(appProps: AppProps) {
   const {UserId, UserRole, email} = appProps as unknown as {UserId: string, UserRole: string, email: string}
   const [MyId, setMyId] = useState<string>(UserId);
   
-
+  React.useEffect(() => {
+    // Remove the server-side injected CSS.
+    const jssStyles = document.querySelector('#jss-server-side');
+    if (jssStyles) {
+      jssStyles.parentElement!.removeChild(jssStyles);
+    }
+  }, []);
   // async function getInitialProps (appContext: AppContext) {
   //   // calls page's `getInitialProps` and fills `appProps.pageProps`
   //   const appProps = await App.getInitialProps(appContext);

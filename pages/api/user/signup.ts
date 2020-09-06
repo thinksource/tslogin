@@ -3,13 +3,9 @@ import {getDatabaseConnection} from '../../../libs/db';
 import {User, UserRole} from '../../../src/entity/User';
 import nextConnect from 'next-connect';
 
-import { user_validate } from '../../../libs/validate';
+import { validate } from '../../../libs/user';
 
-const handler = nextConnect<NextApiRequest, NextApiResponse>({
-    onNoMatch(req, res){
-      res.status(405).json({error:`Method ${req.method} Not Allowed`});
-    }
-  })
+import handler from '../../../libs/handler'
 
   handler.post(async (req, res)=>{
     console.log(req.query)
@@ -25,7 +21,7 @@ const handler = nextConnect<NextApiRequest, NextApiResponse>({
         user.role = UserRole.active
         console.log(password)
         console.log(passwordConfirmation)
-        if (await user_validate(user, passwordConfirmation)){
+        if (await validate(user, passwordConfirmation)){
             console.log("saving now")
             console.log(user)
             const result=await db.save<User>(user)

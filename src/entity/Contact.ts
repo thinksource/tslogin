@@ -1,5 +1,4 @@
 import {Entity, Column, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import { ExecSyncOptionsWithBufferEncoding } from "child_process";
 import { Person } from "./Person";
 export enum PersonTitle {
     Mr = "Mr",
